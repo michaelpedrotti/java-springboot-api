@@ -1,35 +1,29 @@
 package xyz.api.exceptions;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.validation.FieldError;
 
 import jakarta.persistence.EntityNotFoundException;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import xyz.api.responses.ResponseJSON;
 
 @RestControllerAdvice
 public class Http {
+
+    @Autowired
+    private ResponseJSON response;
     
     @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<?> notFound(){
+    public ResponseEntity<ResponseJSON> notFound(){
 
-        return ResponseEntity.notFound().build();
+        return response.fail("Not found", 404).build();
     }
     
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<?> badRequest(MethodArgumentNotValidException ex){
+    public ResponseEntity<ResponseJSON> badRequest(MethodArgumentNotValidException ex){
 
-        Map<String, String> map = new HashMap<String, String>();
-        List<FieldError> errors = ex.getFieldErrors();
-
-        errors.stream().map((FieldError error) -> map.put(error.getField(), error.getDefaultMessage()));
-
-        return ResponseEntity.badRequest().body(map);
-        // return ResponseEntity.badRequest().build();
+        return response.badRequest("Check form fields", ex).build();
     }
 }
