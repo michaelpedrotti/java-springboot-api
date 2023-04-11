@@ -16,7 +16,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 import lombok.Getter;
-import xyz.api.responses.bodies.ResponseBodyToken;
+import xyz.api.responses.bodies.BodyToken;
 
 @Getter
 @Component
@@ -77,7 +77,7 @@ public class ResponseJSON implements Serializable {
 
     public ResponseJSON token(String token){
 
-        this.data = new ResponseBodyToken("asdfsdfadsa");
+        this.data = new BodyToken(token);
         return this;
     }
 

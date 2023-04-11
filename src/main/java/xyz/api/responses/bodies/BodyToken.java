@@ -7,7 +7,7 @@ import lombok.Setter;
 
 @Setter
 @AllArgsConstructor
-public class ResponseBodyToken implements Serializable {
+public class BodyToken implements Serializable {
 
     public String token;
 }

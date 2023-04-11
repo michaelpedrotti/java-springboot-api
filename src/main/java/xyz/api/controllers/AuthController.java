@@ -15,7 +15,7 @@ import jakarta.validation.Valid;
 import xyz.api.entities.AuthEntity;
 import xyz.api.requests.LoginRequest;
 import xyz.api.responses.ResponseJSON;
-import xyz.api.responses.bodies.ResponseBodyToken;
+import xyz.api.responses.bodies.BodyToken;
 import xyz.api.services.TokenService;
 
 @RestController
@@ -35,7 +35,7 @@ public class AuthController {
         var authenticate = this.manager.authenticate(authentication);
         String token = this.token.generate((AuthEntity)authenticate.getPrincipal());
 
-        var data = new ResponseBodyToken(token);
+        var data = new BodyToken(token);
 
         return response.data(data).build();
     }
