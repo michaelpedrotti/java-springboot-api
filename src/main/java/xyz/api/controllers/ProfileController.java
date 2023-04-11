@@ -3,7 +3,6 @@ package xyz.api.controllers;
 import java.io.Serializable;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
@@ -36,10 +35,9 @@ public class ProfileController {
     @GetMapping(value={"", "/"})
     public ResponseEntity<ResponseJSON> index(@PageableDefault(size = 10) Pageable pageable, @Autowired ResponseJSON response){
         
-        Page<ProfileEntity> page = this.repository.findAll(pageable);
+        var page = this.repository.findAll(pageable);
 
-        return response.paginate(page.getContent(), page.getTotalElements())
-            .build();
+        return response.page(page).build();
     }
 
     @GetMapping(value="/{id}")
@@ -70,6 +68,18 @@ public class ProfileController {
 
         return response.success("Profile was created")
             .data(entity)
+            .build();
+    }
+
+    @GetMapping(value="/{id}/edit")
+    public ResponseEntity<ResponseJSON> edit(@PathVariable Long id, @Autowired ResponseJSON response){
+
+        var entity = this.repository.getReferenceById(id);
+        var form = new Serializable() {};
+
+        return response.data(entity)
+            .form(form)
+            .success()
             .build();
     }
 

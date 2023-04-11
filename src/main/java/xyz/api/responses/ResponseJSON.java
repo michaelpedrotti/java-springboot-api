@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.FieldError;
@@ -15,6 +16,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 import lombok.Getter;
+import xyz.api.responses.bodies.ResponseBodyToken;
 
 @Getter
 @Component
@@ -60,10 +62,10 @@ public class ResponseJSON implements Serializable {
         return this;
     }
 
-    public ResponseJSON paginate(List<?> rows, Long total){
+    public ResponseJSON page(Page<?> page){
 
-        this.total = total;
-        this.rows = rows;
+        this.total = page.getTotalElements();
+        this.rows = page.getContent();
         return this;
     }
 
@@ -71,7 +73,13 @@ public class ResponseJSON implements Serializable {
 
         this.form = form;
         return this;
-    } 
+    }
+
+    public ResponseJSON token(String token){
+
+        this.data = new ResponseBodyToken("asdfsdfadsa");
+        return this;
+    }
 
     public ResponseJSON data(Serializable data){
 
