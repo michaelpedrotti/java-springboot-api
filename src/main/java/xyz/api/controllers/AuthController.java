@@ -1,7 +1,5 @@
 package xyz.api.controllers;
 
-import java.io.Serializable;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -28,7 +26,7 @@ public class AuthController {
     @Autowired
     private TokenService token;
 
-    @PostMapping("/login")
+    @PostMapping(path="/login")
     public ResponseEntity<ResponseJSON> login(@RequestBody @Valid LoginRequest request,  @Autowired ResponseJSON response){
 
         var authentication = new UsernamePasswordAuthenticationToken(request.email(), request.password());
