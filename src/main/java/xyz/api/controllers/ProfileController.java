@@ -1,5 +1,7 @@
 package xyz.api.controllers;
 
+import java.io.Serializable;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,6 +21,7 @@ import jakarta.validation.Valid;
 
 import xyz.api.entities.ProfileEntity;
 import xyz.api.repositories.ProfileRepository;
+import xyz.api.responses.ResponseJSON;
 
 @RestController
 @RequestMapping("/profile")
@@ -26,53 +29,87 @@ public class ProfileController {
 
     @Autowired
     private ProfileRepository repository;
- 
-    @GetMapping
-    public ResponseEntity<Page<ProfileEntity>> index(@PageableDefault(size = 10) Pageable pageable){
+
+    // @Autowired
+    // private ResponseJSON response;
+
+    @GetMapping(value={"", "/"})
+    public ResponseEntity<ResponseJSON> index(@PageableDefault(size = 10) Pageable pageable, @Autowired ResponseJSON response){
         
         Page<ProfileEntity> page = this.repository.findAll(pageable);
 
-        return ResponseEntity.ok(page);
+        return response.paginate(page.getContent(), page.getTotalElements())
+            .build();
+    }
+
+    @GetMapping(value="/{id}")
+    public ResponseEntity<ResponseJSON> show(@PathVariable Long id, @Autowired ResponseJSON response){
+
+        var entity = this.repository.getReferenceById(id);
+
+        return response.data(entity)
+            .success()
+            .build();
+    }
+
+    @GetMapping(value="/new")
+    public ResponseEntity<ResponseJSON> create(@Autowired ResponseJSON response){
+
+        var form = new Serializable() {};
+
+        return response.form(form)
+            .success()
+            .build();
     }
 
     @PostMapping
     @Transactional
-    public ResponseEntity<ProfileEntity> create(@RequestBody @Valid ProfileEntity record){
+    public ResponseEntity<ResponseJSON> store(@RequestBody @Valid ProfileEntity entity, @Autowired ResponseJSON response){
 
-        this.repository.save(record);
+        entity = this.repository.save(entity);
 
-        return ResponseEntity.ok(record);
+        return response.success("Profile was created")
+            .data(entity)
+            .build();
     }
 
     @PutMapping("/{id}")
     @Transactional
-    public ResponseEntity<ProfileEntity> update(@RequestBody @Valid ProfileEntity record, @PathVariable Long id){
+    public ResponseEntity<ResponseJSON> update(@RequestBody @Valid ProfileEntity data, @PathVariable Long id, @Autowired ResponseJSON response){
 
-        if(!this.repository.existsById(id)){
+        if(this.repository.existsById(id)){
 
-            return ResponseEntity.notFound().build();
+            data.setId(id);
+
+            var entity = this.repository.save(data);
+
+            response.data(entity).success("Profile was updated");
+        }
+        else {
+
+            response.notFound("Profile was not found");
         }
 
-        record.setId(id);
-
-        record = this.repository.save(record);
-
-        return ResponseEntity.ok(record);  
+        return response.build(); 
     }
 
     @DeleteMapping("/{id}")
     @Transactional
-    public ResponseEntity<ProfileEntity> destroy(@PathVariable Long id){
+    public ResponseEntity<ResponseJSON> destroy(@PathVariable Long id, @Autowired ResponseJSON response){
 
-        if(!this.repository.existsById(id)){
+        if(this.repository.existsById(id)){
 
-            return ResponseEntity.notFound().build();
+            var entity = this.repository.getReferenceById(id);
+
+            this.repository.deleteById(entity.getId());
+
+            response.data(entity).success("Profile was removed");
+        }
+        else {
+
+            response.notFound("Profile was not found");
         }
 
-        ProfileEntity entity = this.repository.getReferenceById(id);
-
-        this.repository.deleteById(entity.getId());
-
-        return ResponseEntity.ok(entity);
+        return response.build();
     }
 }

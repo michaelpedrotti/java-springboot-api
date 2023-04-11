@@ -14,7 +14,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
-import jakarta.persistence.Entity;
 import lombok.Getter;
 
 @Getter
@@ -30,16 +29,24 @@ public class ResponseJSON implements Serializable {
     private String message = "";
 
     @JsonInclude(Include.NON_NULL)
-    private Entity data;
+    private Serializable data = null;
 
     @JsonInclude(Include.NON_NULL)
-    private Map<String, String> fields;
+    private Serializable form = null;
+
+    @JsonInclude(Include.NON_NULL)
+    private Map<String, String> fields = null;
 
     @JsonInclude(Include.NON_NULL)
     private Long total;
 
     @JsonInclude(Include.NON_NULL)
-    private List<Entity> rows;
+    private List<?> rows = null;
+
+    public ResponseJSON success(){
+
+        return this.success("", 200);
+    }
 
     public ResponseJSON success(String message){
 
@@ -50,16 +57,27 @@ public class ResponseJSON implements Serializable {
 
         this.message = message;
         this.status = status;
-
         return this;
     }
 
-    // public ResponseJSON data(Object data){
+    public ResponseJSON paginate(List<?> rows, Long total){
 
-    //     this.data = data;
+        this.total = total;
+        this.rows = rows;
+        return this;
+    }
 
-    //     return this;
-    // }
+    public ResponseJSON form(Serializable form){
+
+        this.form = form;
+        return this;
+    } 
+
+    public ResponseJSON data(Serializable data){
+
+        this.data = data;
+        return this;
+    }
 
     public ResponseJSON fail(String message){
 
@@ -86,8 +104,17 @@ public class ResponseJSON implements Serializable {
         return this;
     }
 
+    public ResponseJSON notFound(String message){
+
+        return this.success(message, 404);
+    }   
+
     public ResponseEntity<ResponseJSON> build(){
 
         return ResponseEntity.status(this.status).body(this);
+    }
+
+    static public ResponseJSON create(){
+        return new ResponseJSON();
     }
 }
