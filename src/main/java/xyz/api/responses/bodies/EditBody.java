@@ -7,7 +7,9 @@ import lombok.Setter;
 
 @Setter
 @AllArgsConstructor
-public class BodyToken implements Serializable {
+public class EditBody implements Serializable {
 
-    public String token;
+    public Serializable form;
+
+    public Serializable data;
 }

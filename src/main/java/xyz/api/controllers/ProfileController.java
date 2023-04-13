@@ -1,7 +1,5 @@
 package xyz.api.controllers;
 
-import java.io.Serializable;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -15,12 +13,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.google.gson.Gson;
+
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 
 import xyz.api.entities.ProfileEntity;
 import xyz.api.repositories.ProfileRepository;
-import xyz.api.responses.ResponseJSON;
+import xyz.api.responses.bodies.CreateBody;
+import xyz.api.responses.bodies.DataBody;
+import xyz.api.responses.bodies.InterfaceBody;
+import xyz.api.responses.bodies.PaginateBody;
 
 @RestController
 @RequestMapping("/profile")
@@ -29,97 +32,91 @@ public class ProfileController {
     @Autowired
     private ProfileRepository repository;
 
-    // @Autowired
-    // private ResponseJSON response;
-
     @GetMapping(value={"", "/"})
-    public ResponseEntity<ResponseJSON> index(@PageableDefault(size = 10) Pageable pageable, @Autowired ResponseJSON response){
+    public ResponseEntity<InterfaceBody> index(@PageableDefault(size = 10) Pageable pageable){
         
         var page = this.repository.findAll(pageable);
+        var body = new PaginateBody(page.getTotalElements(), page.getContent());
 
-        return response.page(page).build();
+        // body.setTotal(page.getTotalElements());
+        // body.setRows(page.getContent());
+
+        System.out.println(new Gson().toJson(body));
+ 
+        return ResponseEntity.status(200).body(body);
     }
 
     @GetMapping(value="/{id}")
-    public ResponseEntity<ResponseJSON> show(@PathVariable Long id, @Autowired ResponseJSON response){
+    public ResponseEntity<InterfaceBody> show(@PathVariable Long id){
 
+        var body = new DataBody();
         var entity = this.repository.getReferenceById(id);
 
-        return response.data(entity)
-            .success()
-            .build();
+        body.setData(entity);
+
+        return ResponseEntity.ok(body);
     }
 
     @GetMapping(value="/new")
-    public ResponseEntity<ResponseJSON> create(@Autowired ResponseJSON response){
+    public ResponseEntity<InterfaceBody> create(){
 
-        var form = new Serializable() {};
+        var body = new CreateBody();
 
-        return response.form(form)
-            .success()
-            .build();
+        return ResponseEntity.ok(body);
     }
 
     @PostMapping
     @Transactional
-    public ResponseEntity<ResponseJSON> store(@RequestBody @Valid ProfileEntity entity, @Autowired ResponseJSON response){
+    public ResponseEntity<InterfaceBody> store(@RequestBody @Valid ProfileEntity entity){
 
         entity = this.repository.save(entity);
+        
+        var body = new DataBody();
+        body.setData(entity);
+        body.setMessage("Profile was created");
 
-        return response.success("Profile was created")
-            .data(entity)
-            .build();
+        return ResponseEntity.ok(body);
     }
 
     @GetMapping(value="/{id}/edit")
-    public ResponseEntity<ResponseJSON> edit(@PathVariable Long id, @Autowired ResponseJSON response){
+    public ResponseEntity<InterfaceBody> edit(@PathVariable Long id){
 
         var entity = this.repository.getReferenceById(id);
-        var form = new Serializable() {};
+        var body = new DataBody();
 
-        return response.data(entity)
-            .form(form)
-            .success()
-            .build();
+        body.setData(entity);
+
+        return ResponseEntity.ok(body);
     }
 
     @PutMapping("/{id}")
     @Transactional
-    public ResponseEntity<ResponseJSON> update(@RequestBody @Valid ProfileEntity data, @PathVariable Long id, @Autowired ResponseJSON response){
+    public ResponseEntity<InterfaceBody> update(@RequestBody @Valid ProfileEntity data, @PathVariable Long id){
 
-        if(this.repository.existsById(id)){
+        var entity = this.repository.getReferenceById(id);
+        var body = new DataBody();
 
-            data.setId(id);
+        data.setId(entity.getId());
+        entity = this.repository.save(data);
 
-            var entity = this.repository.save(data);
-
-            response.data(entity).success("Profile was updated");
-        }
-        else {
-
-            response.notFound("Profile was not found");
-        }
-
-        return response.build(); 
+        body.setData(entity);
+        body.setMessage("Profile was updated");
+ 
+        return ResponseEntity.ok(body);
     }
 
     @DeleteMapping("/{id}")
     @Transactional
-    public ResponseEntity<ResponseJSON> destroy(@PathVariable Long id, @Autowired ResponseJSON response){
+    public ResponseEntity<InterfaceBody> destroy(@PathVariable Long id){
 
-        if(this.repository.existsById(id)){
+        var entity = this.repository.getReferenceById(id);
+        var body = new DataBody();
 
-            var entity = this.repository.getReferenceById(id);
+        this.repository.deleteById(entity.getId());
 
-            this.repository.deleteById(entity.getId());
+        body.setData(entity);
+        body.setMessage("Profile was removed");
 
-            response.data(entity).success("Profile was removed");
-        }
-        else {
-
-            response.notFound("Profile was not found");
-        }
-
-        return response.build();
+        return ResponseEntity.ok(body);
     }
 }

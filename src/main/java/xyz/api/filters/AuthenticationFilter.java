@@ -38,14 +38,13 @@ public class AuthenticationFilter extends OncePerRequestFilter {
 
             var user = this.repository.findById(Long.valueOf(id)).get();
 
+            // System.out.println(user);
+
             var auth = new AuthEntity(user.getId(), user.getEmail(), user.getPassword());
 
             SecurityContextHolder.getContext().setAuthentication(
                 new UsernamePasswordAuthenticationToken(auth, null, auth.getAuthorities())
             );
-
-            System.out.println(id);
-
         }
 
         filterChain.doFilter(request, response);

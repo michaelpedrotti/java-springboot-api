@@ -1,29 +1,36 @@
 package xyz.api.exceptions;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import jakarta.persistence.EntityNotFoundException;
-import xyz.api.responses.ResponseJSON;
+import xyz.api.responses.bodies.BaseBody;
+import xyz.api.responses.bodies.InterfaceBody;
+import xyz.api.responses.bodies.ValidatedBody;
 
 @RestControllerAdvice
 public class Http {
 
-    @Autowired
-    private ResponseJSON response;
-    
     @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<ResponseJSON> notFound(){
+    public ResponseEntity<InterfaceBody> notFound(){
 
-        return response.fail("Not found", 404).build();
+        var body = new BaseBody();
+        body.setError(true);
+        body.setMessage("Record was not found");
+
+        return ResponseEntity.status(404).body(body);
     }
     
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ResponseJSON> badRequest(MethodArgumentNotValidException ex){
+    public ResponseEntity<InterfaceBody> badRequest(MethodArgumentNotValidException ex){
 
-        return response.badRequest("Check form fields", ex).build();
+        var body = new ValidatedBody();
+        body.setError(true);
+        body.setMessage("Check form fields");
+        body.setFields(ex);
+
+        return ResponseEntity.status(400).body(body);
     }
 }

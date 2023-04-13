@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.validation.Valid;
 import xyz.api.entities.AuthEntity;
 import xyz.api.requests.LoginRequest;
-import xyz.api.responses.ResponseJSON;
-import xyz.api.responses.bodies.BodyToken;
+import xyz.api.responses.bodies.InterfaceBody;
+import xyz.api.responses.bodies.LoginBody;
 import xyz.api.services.TokenService;
 
 @RestController
@@ -27,14 +27,14 @@ public class AuthController {
     private TokenService token;
 
     @PostMapping(path="/login")
-    public ResponseEntity<ResponseJSON> login(@RequestBody @Valid LoginRequest request,  @Autowired ResponseJSON response){
+    public ResponseEntity<InterfaceBody> login(@RequestBody @Valid LoginRequest request){
 
         var authentication = new UsernamePasswordAuthenticationToken(request.email(), request.password());
         var authenticate = this.manager.authenticate(authentication);
         String token = this.token.generate((AuthEntity)authenticate.getPrincipal());
 
-        var data = new BodyToken(token);
+        var body = new LoginBody(token);
 
-        return response.data(data).build();
+        return ResponseEntity.ok(body);
     }
 }
