@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -63,6 +64,8 @@ public class UserController {
     @PostMapping
     @Transactional
     public ResponseEntity<InterfaceBody> store(@RequestBody @Valid UserEntity entity){
+
+        entity.setPassword(new BCryptPasswordEncoder().encode("102030"));
 
         entity = this.repository.save(entity);
         

@@ -13,8 +13,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.google.gson.Gson;
-
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 
@@ -41,8 +39,8 @@ public class ProfileController {
         body.setTotal(page.getTotalElements());
         body.setRows(page.getContent());
 
-        String b = new Gson().toJson(body);
-        System.out.println(new Gson().toJson(body));
+        // String b = new Gson().toJson(body);
+        // System.out.println(new Gson().toJson(body));
  
         return ResponseEntity.ok(body);
     }

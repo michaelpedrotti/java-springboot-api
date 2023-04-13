@@ -2,6 +2,9 @@ package xyz.api.entities;
 
 import java.io.Serializable;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -20,6 +23,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(of = "id")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class UserEntity implements Serializable {
     
     @Id
@@ -30,5 +34,8 @@ public class UserEntity implements Serializable {
 
     private String email;
 
+    private Long profile_id;
+
+    @JsonIgnore
     private String password;
 }
