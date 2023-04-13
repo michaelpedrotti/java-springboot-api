@@ -33,7 +33,10 @@ public class UserController {
     public ResponseEntity<InterfaceBody> index(@PageableDefault(size = 10) Pageable pageable){
         
         var page = this.repository.findAll(pageable);
-        var body = new PaginateBody(page.getTotalElements(), page.getContent());
+        var body = new PaginateBody();
+
+        body.setTotal(page.getTotalElements());
+        body.setRows(page.getContent());
 
         return ResponseEntity.ok(body);
     }

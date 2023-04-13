@@ -14,9 +14,10 @@ import lombok.Setter;
 @NoArgsConstructor
 public class PaginateBody extends BaseBody {
     
-    @JsonInclude(Include.NON_NULL)
-    private Long total;
+    @JsonInclude(Include.NON_EMPTY)
+    public Long total;
+
 
     @JsonInclude(Include.NON_NULL)
-    private List<?> rows = null;
+    public List<?> rows = null;
 }

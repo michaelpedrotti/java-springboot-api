@@ -36,14 +36,15 @@ public class ProfileController {
     public ResponseEntity<InterfaceBody> index(@PageableDefault(size = 10) Pageable pageable){
         
         var page = this.repository.findAll(pageable);
-        var body = new PaginateBody(page.getTotalElements(), page.getContent());
+        var body = new PaginateBody();
 
-        // body.setTotal(page.getTotalElements());
-        // body.setRows(page.getContent());
+        body.setTotal(page.getTotalElements());
+        body.setRows(page.getContent());
 
+        String b = new Gson().toJson(body);
         System.out.println(new Gson().toJson(body));
  
-        return ResponseEntity.status(200).body(body);
+        return ResponseEntity.ok(body);
     }
 
     @GetMapping(value="/{id}")

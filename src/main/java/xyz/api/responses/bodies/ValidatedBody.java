@@ -12,7 +12,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 public class ValidatedBody extends BaseBody {
     
     @JsonInclude(Include.NON_NULL)
-    private Map<String, String> fields = null;
+    public Map<String, String> fields = null;
 
     public ValidatedBody setFields(MethodArgumentNotValidException ex){
 
