@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 
@@ -24,6 +25,7 @@ import xyz.api.responses.bodies.InterfaceBody;
 import xyz.api.responses.bodies.PaginateBody;
 
 @RestController
+@SecurityRequirement(name="bearer-key")
 @RequestMapping("/profile")
 public class ProfileController {
 

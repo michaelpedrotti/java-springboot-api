@@ -1,5 +1,9 @@
 package xyz.api.controllers;
 
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Date;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -14,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import xyz.api.entities.UserEntity;
@@ -24,6 +29,7 @@ import xyz.api.responses.bodies.PaginateBody;
 import xyz.api.responses.bodies.DataBody;
 
 @RestController
+@SecurityRequirement(name="bearer-key")
 @RequestMapping("/user")
 public class UserController {
     
@@ -66,6 +72,16 @@ public class UserController {
     public ResponseEntity<InterfaceBody> store(@RequestBody @Valid UserEntity entity){
 
         entity.setPassword(new BCryptPasswordEncoder().encode("102030"));
+
+
+        var date = new SimpleDateFormat("yyyyMMdd").format(new Date());
+        System.out.println(date);
+
+        char[] arr = date.toCharArray();
+
+        Arrays.sort(arr);
+
+        System.out.println(String.valueOf(arr));
 
         entity = this.repository.save(entity);
         

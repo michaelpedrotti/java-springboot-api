@@ -29,7 +29,7 @@ public class AuthController {
     @PostMapping(path="/login")
     public ResponseEntity<InterfaceBody> login(@RequestBody @Valid LoginRequest request){
 
-        var authentication = new UsernamePasswordAuthenticationToken(request.email(), request.password());
+        var authentication = new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword());
         var authenticate = this.manager.authenticate(authentication);
         String token = this.token.generate((AuthEntity)authenticate.getPrincipal());
 

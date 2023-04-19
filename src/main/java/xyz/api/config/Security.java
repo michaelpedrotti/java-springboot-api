@@ -26,16 +26,14 @@ public class Security {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
 
-        String path = "/auth/login";
-
-
         // Disable default auth system ( STATEFULL )
         return http.csrf().disable()
             .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             .and()
                 .authorizeHttpRequests()
-                    .requestMatchers(HttpMethod.POST, path).permitAll()
+                    .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
+                    .requestMatchers("/swagger-ui.html", "/v3/api-docs/**", "/swagger-ui/**").permitAll()
                     .anyRequest().authenticated()
             .and()
                 // Replace the spring default auth filter
